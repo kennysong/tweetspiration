@@ -1,0 +1,23 @@
+application: tweet-spiration
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /admin_console/.*
+  script: google.appengine.ext.admin.application
+  login: admin
+
+- url: .*
+  script: main.app
+
+libraries:
+- name: jinja2
+  version: '2.6'
+
+- name: django
+  version: latest
