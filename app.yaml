@@ -12,6 +12,10 @@ handlers:
   script: google.appengine.ext.admin.application
   login: admin
 
+- url: /scrape
+  script: main.app
+  login: admin
+
 - url: .*
   script: main.app
 
