@@ -24,6 +24,7 @@ class Tweets(db.Model):
 	date = db.DateTimeProperty()
 	url = db.StringProperty()
 	img_url = db.StringProperty()
+	group = db.StringProperty()
 
 ## Views ##
 
@@ -48,9 +49,18 @@ class BaseHandler(webapp2.RequestHandler):
 
 class MainHandler(BaseHandler):
 	def get(self):
-		tweets = get_tweets()
-
-		self.render('index.html', {'tweets':tweets})
+		# parse page param
+		if self.rget('page'): 
+			try:
+				page = int(self.rget('page'))
+				if page < 1:
+					page = 1
+			except:
+				page = 1
+			
+		tweets = get_tweets(page)
+		
+		self.render('index.html', {'tweets':tweets, 'page':page})
 
 
 
@@ -86,7 +96,7 @@ def get_tweets(page=1):
 	'''Fetches one page of (20) tweets'''
 	q = Tweets.all()
 	q.order('-date')
-	tweets = q.run(limit=20)
+	tweets = q.run(limit=20, offset=(page-1)*20)
 
 	return tweets
 
