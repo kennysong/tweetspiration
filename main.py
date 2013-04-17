@@ -64,11 +64,23 @@ class ScrapeHandler(BaseHandler):
 
 SCRAPE_URL = 'http://search.twitter.com/search.json?q=(%22someone%20should%22)%20(make%20OR%20build%20OR%20create%20OR%20develop%20OR%20start%20OR%20design%20OR%20invent)%20(software%20OR%20app%20OR%20application%20OR%20tool%20OR%20website%20OR%20site%20OR%20service%20OR%20product%20OR%20company%20OR%20business)&page='
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
+
 RE_HTTP = re.compile(r"(http://[^ ]+)")
 RE_HTTPS = re.compile(r"(https://[^ ]+)")
 RE_USERNAME = re.compile(r"(^|\s)@([A-Za-z0-9_]+)")
 RE_SS = re.compile(r'(^|\s)(someone\sshould)(\s|$)', re.IGNORECASE)
-BUTTON_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
+RE_APP = re.compile(r'(^|\s)(app)(\s|$)', re.IGNORECASE)
+RE_APPLICATION = re.compile(r'(^|\s)(application)(\s|$)', re.IGNORECASE)
+RE_SITE = re.compile(r'(^|\s)(site)(\s|$)', re.IGNORECASE)
+RE_WEBSITE = re.compile(r'(^|\s)(website)(\s|$)', re.IGNORECASE)
+RE_COMPANY = re.compile(r'(^|\s)(company)(\s|$)', re.IGNORECASE)
+RE_BUSINESS = re.compile(r'(^|\s)(business)(\s|$)', re.IGNORECASE)
+RE_TOOL = re.compile(r'(^|\s)(tool)(\s|$)', re.IGNORECASE)
+RE_PRODUCT = re.compile(r'(^|\s)(product)(\s|$)', re.IGNORECASE)
+RE_SOFTWARE = re.compile(r'(^|\s)(software)(\s|$)', re.IGNORECASE)
+RE_SERVICE = re.compile(r'(^|\s)(service)(\s|$)', re.IGNORECASE)
+
+#BUTTON_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
 
 def get_tweets(page=1):
 	'''Fetches one page of (20) tweets'''
@@ -112,13 +124,33 @@ def scrape_tweets(page=1):
 
 def filter_tweet(text):
 	text = text.encode('ascii', 'ignore')
-
+	
+	# create links in hmtl
 	html = RE_HTTP.sub(r'<a href="\1">\1</a>', text)
 	html = RE_HTTPS.sub(r'<a href="\1">\1</a>', html)
 	html = RE_USERNAME.sub(r'\1<span style="color:#08C">@</span><a href="//twitter.com/\2">\2</a> ', html)
+	
+	# create colors
 	html = RE_SS.sub(r'\1<strong>\2</strong>\3', html)
-
+	html = RE_APP.sub(r'\1<span class="app">\2</span>\3', html)
+	html = RE_APPLICATION.sub(r'\1<span class="app">\2</span>\3', html)
+	html = RE_SITE.sub(r'\1<span class="site">\2</span>\3', html)
+	html = RE_WEBSITE.sub(r'\1<span class="site">\2</span>\3', html)
+	html = RE_COMPANY.sub(r'\1<span class="company">\2</span>\3', html)
+	html = RE_BUSINESS.sub(r'\1<span class="company">\2</span>\3', html)
+	html = RE_TOOL.sub(r'\1<span class="tool">\2</span>\3', html)
+	html = RE_PRODUCT.sub(r'\1<span class="tool">\2</span>\3', html)
+	html = RE_SOFTWARE.sub(r'\1<span class="tool">\2</span>\3', html)
+	html = RE_SERVICE.sub(r'\1<span class="service">\2</span>\3', html)
+	
 	return html
+	
+	
+#FFB42C; orange
+#0FC8CC; blue
+#DD6945; red
+#94D45A; green
+#D15EDE; purple
 
 def initial_scrape():
 	'''Scrapes all tweets possible and adds to db'''
