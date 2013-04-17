@@ -1,0 +1,4 @@
+cron:
+- description: periodic twitter scrape
+  url: /scrape
+  schedule: every 10 minutes synchronized
