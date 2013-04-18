@@ -19,7 +19,7 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), a
 
 class Tweets(db.Model):
 	text = db.TextProperty() # raw tweet text
-	html = db.StringProperty() # formatted, filtered tweet text
+	html = db.TextProperty() # formatted, filtered tweet text
 	username = db.StringProperty()
 	date = db.DateTimeProperty()
 	url = db.StringProperty()
@@ -50,9 +50,10 @@ class BaseHandler(webapp2.RequestHandler):
 class MainHandler(BaseHandler):
 	def get(self):
 		# parse page param
-		if self.rget('page'): 
+		page = 1
+		if self.rget('p'): 
 			try:
-				page = int(self.rget('page'))
+				page = int(self.rget('p'))
 				if page < 1:
 					page = 1
 			except:
@@ -78,25 +79,25 @@ DT_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
 RE_HTTP = re.compile(r"(http://[^ ]+)")
 RE_HTTPS = re.compile(r"(https://[^ ]+)")
 RE_USERNAME = re.compile(r"(^|\s)@([A-Za-z0-9_]+)")
-RE_SS = re.compile(r'(^|\s)(someone\sshould)(\s|$)', re.IGNORECASE)
-RE_APP = re.compile(r'(^|\s)(app)(\s|$)', re.IGNORECASE)
-RE_APPLICATION = re.compile(r'(^|\s)(application)(\s|$)', re.IGNORECASE)
-RE_SITE = re.compile(r'(^|\s)(site)(\s|$)', re.IGNORECASE)
-RE_WEBSITE = re.compile(r'(^|\s)(website)(\s|$)', re.IGNORECASE)
-RE_COMPANY = re.compile(r'(^|\s)(company)(\s|$)', re.IGNORECASE)
-RE_BUSINESS = re.compile(r'(^|\s)(business)(\s|$)', re.IGNORECASE)
-RE_TOOL = re.compile(r'(^|\s)(tool)(\s|$)', re.IGNORECASE)
-RE_PRODUCT = re.compile(r'(^|\s)(product)(\s|$)', re.IGNORECASE)
-RE_SOFTWARE = re.compile(r'(^|\s)(software)(\s|$)', re.IGNORECASE)
-RE_SERVICE = re.compile(r'(^|\s)(service)(\s|$)', re.IGNORECASE)
+RE_SS = re.compile(r'(^|\s)(someone\sshould)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_APP = re.compile(r'(^|\s)(app)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_APPLICATION = re.compile(r'(^|\s)(application)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_SITE = re.compile(r'(^|\s)(site)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_WEBSITE = re.compile(r'(^|\s)(website)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_COMPANY = re.compile(r'(^|\s)(company)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_BUSINESS = re.compile(r'(^|\s)(business)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_TOOL = re.compile(r'(^|\s)(tool)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_PRODUCT = re.compile(r'(^|\s)(product)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_SOFTWARE = re.compile(r'(^|\s)(software)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
+RE_SERVICE = re.compile(r'(^|\s)(service)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
 
-#BUTTON_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
+BUTTON_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
 
 def get_tweets(page=1):
-	'''Fetches one page of (20) tweets'''
+	'''Fetches one page of (15) tweets'''
 	q = Tweets.all()
 	q.order('-date')
-	tweets = q.run(limit=20, offset=(page-1)*20)
+	tweets = q.run(limit=15, offset=(page-1)*15)
 
 	return tweets
 
@@ -138,7 +139,7 @@ def filter_tweet(text):
 	# create links in hmtl
 	html = RE_HTTP.sub(r'<a href="\1">\1</a>', text)
 	html = RE_HTTPS.sub(r'<a href="\1">\1</a>', html)
-	html = RE_USERNAME.sub(r'\1<span style="color:#08C">@</span><a href="//twitter.com/\2">\2</a> ', html)
+	html = RE_USERNAME.sub(r'\1<span style="color:#08C">@</span><a href="//twitter.com/\2">\2</a>', html)
 	
 	# create colors
 	html = RE_SS.sub(r'\1<strong>\2</strong>\3', html)
