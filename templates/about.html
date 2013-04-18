@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Tweetspiration</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.css">
+        <link href='http://fonts.googleapis.com/css?family=Lobster|Lobster+Two:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Raleway:300,500' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+    </head>
+
+    <style>
+    h1 {
+        font-family: 'Lobster Two', cursive;
+        font-weight: 500;
+        text-align: center;
+        font-size: 56px;
+        text-shadow: 1px 1px 1px #686868;
+        margin-top: 20px;
+        font-style: italic;
+    }
+
+    h3{
+        font-family: Raleway, Arial;
+        font-weight: 500;
+        text-align: center;
+        font-size: 16px;
+        color: #5F5F5F;
+        margin-top: 17px;
+        font-weight: 100;
+        margin-bottom: 8px;
+
+    }
+
+    #logo_1{
+        color: #34A3E2;
+    }
+
+    #logo_2{
+        color: #333;
+    }
+
+
+    p {
+        font-family: Raleway, Arial;
+        font-size: 16px;
+        font-weight: 100;
+        margin-bottom: 25px;
+    }
+
+
+    #top {
+        width: 100%;
+        position: fixed;
+        box-shadow: 0 6px 9px -6px rgba(0, 0, 0, 0.5);
+        z-index: 100;
+        background-image: url('/static/img/arches.png');
+        top: 0;
+    }
+
+    #about {
+font-size: 50px;
+color: #6B6B6B;
+text-shadow: none;
+    }
+
+    #wrapper {        
+        width: 715px;
+        margin: 165px auto 0px;
+    }
+
+    h2 {
+        font-family: Raleway, Arial;
+        font-size: 24px;
+        font-weight: 400;
+    }
+
+    hr {
+        border: 0;
+border-top: 1px dashed #EEE;
+    }
+
+    #top a:hover {
+        text-decoration: none;
+    }
+
+    strong {
+        font-weight: 400;
+    }
+
+    #footer{
+    text-align: center;
+    font-family: Raleway, Arial;
+    font-size: 11px;
+    color: #A5A5A5;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -109px;
+    }
+
+    </style>
+
+    <body>
+        <div id="top">
+            <h1><span id="about">about</span> <a href="/"><span id="logo_1">Tweet</span><span id="logo_2">spiration</span></a></h1>
+            <h3>Tired of brainstorming awesome app ideas? Let Twitter do it for you!</h3>
+        </div>
+
+        <div id="wrapper">
+            <h2>What is this website?</h2>
+            <p>
+                Tweetspiration scours the web for Twitter users' wishes, desires, and complaints. It may provide some inspiration if you're looking for an idea for an app (or website or business). Just sit back and let the internet brainstorm for you!
+            </p>
+            <p>
+                <strong>Caution:</strong> none of these tweets are screened, so there may occasionally be an unsuitable message. View at your own risk :)
+            </p>
+
+            <h2>How does it work?</h2>
+            <p>
+                Periodically, we run this <a href="http://search.twitter.com/search.json?q=(%22someone%20should%22)%20(make%20OR%20build%20OR%20create%20OR%20develop%20OR%20start%20OR%20design%20OR%20invent)%20(software%20OR%20app%20OR%20application%20OR%20tool%20OR%20website%20OR%20site%20OR%20service%20OR%20product%20OR%20company%20OR%20business)">search</a> on Twitter and collect the results. We then do a bunch of fun stuff to these tweets and display them here! It operates on Google App Engine, Python style.
+             </p>
+
+                <p>Check out the source on <a href="https://github.com/kennysong/tweetspiration">Github</a>.</p>
+
+                <div id="footer">Built with inspiration by Kenny Song</div>
+
+        </div>
+
+
+
+</div>
+    </body>
+</html>

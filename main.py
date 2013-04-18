@@ -58,14 +58,20 @@ class MainHandler(BaseHandler):
 					page = 1
 			except:
 				page = 1
-			
-		tweets = get_tweets(page)
+
+		group = 'none'
+		if self.rget('filter') in GROUPS:
+			group = self.rget('filter')
+
+		tweets = get_tweets(page, group)
 		next = rand_next_text()
 		max_page = get_max_page()
 
 		self.render('index.html', {'tweets':tweets, 'page':page, 'next':next, 'max_page':max_page})
 
-
+class AboutHandler(BaseHandler):
+	def get(self):
+		self.render('about.html')
 
 class ScrapeHandler(BaseHandler):
 	def get(self):		
@@ -93,12 +99,18 @@ RE_PRODUCT = re.compile(r'(^|\s)(product)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORE
 RE_SOFTWARE = re.compile(r'(^|\s)(software)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
 RE_SERVICE = re.compile(r'(^|\s)(service)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
 
+
+GROUPS = ['app', 'website', 'business', 'service', 'tool']
 NEXT_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
 
-def get_tweets(page=1):
+def get_tweets(page=1, group='none'):
 	'''Fetches one page of (15) tweets'''
 	q = Tweets.all()
 	q.order('-date')
+
+	if group != 'none':
+		q.filter('group =', group)
+
 	tweets = q.run(limit=15, offset=(page-1)*15)
 
 	return tweets
@@ -124,6 +136,7 @@ def scrape_tweets(page=1):
 		img_url = tweet['profile_image_url_https']
 		url = 'https://twitter.com/'+username+'/status/'+tweet['id_str']
 		html = filter_tweet(text)
+		group = get_group(text)
 		
 		date = datetime.strptime(tweet['created_at'], DT_FORMAT)	
 
@@ -134,11 +147,26 @@ def scrape_tweets(page=1):
 			continue
 		else:
 			updated += 1
-			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url)		
+			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url, group=group)		
 			twt.put()
 
 	logging.info('Updated %i entries'%updated)
 	return updated
+
+def get_group(text):
+	if RE_COMPANY.search(text) or RE_BUSINESS.search(text):
+		group = 'business'
+	elif RE_TOOL.search(text) or RE_PRODUCT.search(text) or RE_SOFTWARE.search(text):
+		group = 'tool'
+	elif RE_SERVICE.search(text):
+		group = 'service'
+	elif RE_APP.search(text) or RE_APPLICATION.search(text):
+		group = 'app'
+	elif RE_SITE.search(text) or RE_WEBSITE.search(text):
+		group = 'website'
+	else:
+		group = 'none'
+	return group
 
 def filter_tweet(text):
 	text = text.encode('ascii', 'ignore')
@@ -186,6 +214,7 @@ def delete_all():
     db.delete(Tweets.all(keys_only=True))
 
 app = webapp2.WSGIApplication([('/', MainHandler),
+							   ('/about/?', AboutHandler),
 							   ('/scrape', ScrapeHandler),
 							  ],
 							  debug=True)

@@ -37,7 +37,7 @@
     }
 
     #logo_2{
-        color: ;
+        color: #333;
     }
 
 
@@ -116,6 +116,7 @@
         box-shadow: 0 6px 9px -6px rgba(0, 0, 0, 0.5);
         z-index: 100;
         background-image: url('/static/img/arches.png');
+        top: 0;
     }
 
 
@@ -138,30 +139,30 @@
         filter: none;
         -webkit-filter: grayscale(0);
     }
-    .company{
+    .company, .company:hover{
         color: #F89A23;
         font-weight: 400;
     }
-    .site{
+    .site, .site:hover{
         color: #3CC93C;
         font-weight: 400;
     }
-    .app{
+    .app, .app:hover{
         color: #DD4545; 
         font-weight: 400;
     }
-    .service{
+    .service, .service:hover{
         color: #1EC3DA; 
         font-weight: 400;
     }
-    .tool{
+    .tool, .tool:hover{
         color: #D15EDE; 
         font-weight: 400;
     }
 
     #pages {
         width: 715px;
-margin: 20px auto 20px auto;
+        margin: 20px auto 20px auto;
     }
 
     #right{
@@ -182,12 +183,63 @@ margin: 20px auto 20px auto;
 border-top: 1px dashed #EEE;
     }
 
+    #top a:hover {
+        text-decoration: none;
+    }
+
+    #links {
+        position: absolute;
+        top: 150px;
+        right: 25px;
+        font-size: 14px;
+        color: gray;
+    }
+
+    #links a {
+        color: #5E5E5E;
+    }
+
+    #links a:hover {
+        color: black;
+    }
+
+    #filters {
+        position: absolute;
+        top: 175px;
+        right: 45px;
+        z-index: 150;
+        display: none;
+    }
+
+    #links a:hover {
+        color: inherit;
+    }
+
+
     </style>
 
     <body>
         <div id="top">
+            {% if page == 1 %}
             <h1><span id="logo_1">Tweet</span><span id="logo_2">spiration</span></h1>
+            {% else %}
+            <h1><a href="/"><span id="logo_1">Tweet</span><span id="logo_2">spiration</span></a></h1>
+            {% endif %}
             <h3>Tired of brainstorming awesome app ideas? Let Twitter do it for you!</h3>
+        </div>
+
+        <div id="links">
+            <a href="#filter" id="filter">Filter&thinsp;<span id="arrow" style="font-size:9px">&#9660;</span></a> &middot; <a href="/about">About</a>
+        </div>
+
+        <div id="filters">
+            <ul>
+              <li><a href="/?filter=app" class="app" style="font-weight: 900;">App</a></li>
+              <li><a href="/?filter=site" class="site" style="font-weight: 900;">Website</a></li>
+              <li><a href="/?filter=business" class="company" style="font-weight: 900;">Business</a></li>
+              <li><a href="/?filter=service" class="service" style="font-weight: 900;">Service</a></li>
+              <li><a href="/?filter=tool" class="tool" style="font-weight: 900;">Tool</a></li>
+          </ul> 
         </div>
 
         <div id="collection">
@@ -227,5 +279,20 @@ border-top: 1px dashed #EEE;
 
 
 </div>
+
+    <script type="text/javascript">
+        $('#filter').click(function(e){
+            e.preventDefault();
+            if ($('#filters').css('display') == 'none') {
+                
+                $('#filters').slideDown('slow');
+                $('#arrow').html('&#9650;');      
+            } else {
+                
+                $('#filters').slideUp('slow');
+                $('#arrow').html('&#9660;');
+            }
+        });
+    </script>
     </body>
 </html>
