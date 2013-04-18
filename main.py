@@ -60,8 +60,10 @@ class MainHandler(BaseHandler):
 				page = 1
 			
 		tweets = get_tweets(page)
-		
-		self.render('index.html', {'tweets':tweets, 'page':page})
+		next = rand_next_text()
+		max_page = get_max_page()
+
+		self.render('index.html', {'tweets':tweets, 'page':page, 'next':next, 'max_page':max_page})
 
 
 
@@ -91,7 +93,7 @@ RE_PRODUCT = re.compile(r'(^|\s)(product)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORE
 RE_SOFTWARE = re.compile(r'(^|\s)(software)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
 RE_SERVICE = re.compile(r'(^|\s)(service)(\s|$|[\,\:\;\"\-\.\!\?\'])', re.IGNORECASE)
 
-BUTTON_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
+NEXT_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 'Terrific', 'Marvelous', 'Fantastic', 'Inspirational', 'Creative']
 
 def get_tweets(page=1):
 	'''Fetches one page of (15) tweets'''
@@ -100,6 +102,11 @@ def get_tweets(page=1):
 	tweets = q.run(limit=15, offset=(page-1)*15)
 
 	return tweets
+
+def get_max_page():
+	q = Tweets.all()
+	count = q.count()
+	return (count // 15) + 1 #ghetto ceil function
 
 def scrape_tweets(page=1):
 	'''Scrapes one page of tweets and adds to db'''
@@ -172,13 +179,12 @@ def initial_scrape():
 		page += 1
 		time.sleep(10)
 
-def rand_button():
-	return choice(BUTTON_TEXT)
+def rand_next_text():
+	return choice(NEXT_TEXT)
 
 def delete_all():
     db.delete(Tweets.all(keys_only=True))
 
-jinja_env.globals['rand_button'] = rand_button()
 app = webapp2.WSGIApplication([('/', MainHandler),
 							   ('/scrape', ScrapeHandler),
 							  ],

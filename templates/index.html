@@ -46,7 +46,7 @@
         font-weight: 100;      
         position: relative;
         top: 180px;
-        padding-bottom: 75px;
+        padding-bottom: 35px;
 
     }
 
@@ -161,7 +161,7 @@
 
     #pages {
         width: 715px;
-        margin: 45px auto;
+margin: 20px auto 20px auto;
     }
 
     #right{
@@ -175,6 +175,11 @@
         margin-left: 15px;
         float: left;
 
+    }
+
+    hr {
+        border: 0;
+border-top: 1px dashed #EEE;
     }
 
     </style>
@@ -196,8 +201,10 @@
             </div>
         {% endfor %}
        
+        <hr>
+
         <div id="pages">
-                        {% if page > 1 %}
+            {% if page > 1 %}
 
             <div id="left">
                 <a href="/?p={{page - 1}}">&larr; Take me back</a>
@@ -205,9 +212,13 @@
 
             {% endif %}
 
+            {% if page < max_page %}
+
             <div id="right">
-                <a href="/?p={{page + 1}}">{{ rand_button }}! Show me more &rarr;</a>
+                <a href="/?p={{page + 1}}">{{ next }}! Show me more &rarr;</a>
             </div>
+
+            {% endif %}
 
 
 </div>
