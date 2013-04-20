@@ -12,6 +12,7 @@ from django.utils import simplejson
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
+from google.appengine.api import memcache
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
@@ -107,19 +108,26 @@ NEXT_TEXT = ['Awesome', 'Brilliant', 'Genius', 'Ingenious', 'Clever', 'Superb', 
 
 def get_tweets(page=1, group='none'):
 	'''Fetches one page of (15) tweets'''
-	q = Tweets.all()
-	q.order('-date')
+	tweets = memcache.get(group+str(page))
+	if not tweets:
+		q = Tweets.all()
+		q.order('-date')
 
-	if group != 'none':
-		q.filter('group =', group)
+		if group != 'none':
+			q.filter('group =', group)
 
-	tweets = q.run(limit=15, offset=(page-1)*15)
+		tweets = q.fetch(limit=15, offset=(page-1)*15)
+
+		memcache.set(group+str(page), tweets)
 
 	return tweets
 
 def get_max_page():
-	q = Tweets.all()
-	count = q.count()
+	count = memcache.get('count')
+	if not count:
+		q = Tweets.all()
+		count = q.count()
+		memcache.set('count', count)		
 	return (count // 15) + 1 #ghetto ceil function
 
 def scrape_tweets(page=1):
@@ -152,6 +160,9 @@ def scrape_tweets(page=1):
 			updated += 1
 			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url, group=group, hsh=hsh)		
 			twt.put()
+
+	memcache.delete('none1')
+	memcache.delete('count')
 
 	logging.info('Updated %i entries'%updated)
 	return updated
