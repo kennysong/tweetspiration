@@ -69,7 +69,7 @@ class MainHandler(BaseHandler):
 		next = rand_next_text()
 		max_page = get_max_page()
 
-		self.render('index.html', {'tweets':tweets, 'page':page, 'next':next, 'max_page':max_page})
+		self.render('index.html', {'tweets':tweets, 'page':page, 'next':next, 'max_page':max_page, 'group':group})
 
 class AboutHandler(BaseHandler):
 	def get(self):

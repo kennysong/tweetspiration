@@ -143,22 +143,27 @@
     .company, .company:hover{
         color: #F89A23;
         font-weight: 400;
+        font-family: Raleway, Arial;
     }
     .site, .site:hover{
         color: #3CC93C;
         font-weight: 400;
+        font-family: Raleway, Arial;
     }
     .app, .app:hover{
         color: #DD4545; 
         font-weight: 400;
+        font-family: Raleway, Arial;
     }
     .service, .service:hover{
         color: #1EC3DA; 
         font-weight: 400;
+        font-family: Raleway, Arial;
     }
     .tool, .tool:hover{
         color: #D15EDE; 
         font-weight: 400;
+        font-family: Raleway, Arial;
     }
 
     #pages {
@@ -207,7 +212,7 @@ border-top: 1px dashed #EEE;
     #filters {
         position: absolute;
         top: 175px;
-        right: 45px;
+        right: 62px;
         z-index: 150;
         display: none;
     }
@@ -221,7 +226,7 @@ border-top: 1px dashed #EEE;
 
     <body>
         <div id="top">
-            {% if page == 1 %}
+            {% if page == 1 and group == 'none' %}
             <h1><span id="logo_1">Tweet</span><span id="logo_2">spiration</span></h1>
             {% else %}
             <h1><a href="/"><span id="logo_1">Tweet</span><span id="logo_2">spiration</span></a></h1>
@@ -235,11 +240,11 @@ border-top: 1px dashed #EEE;
 
         <div id="filters">
             <ul>
-              <li><a href="/?filter=app" class="app" style="font-weight: 900;">App</a></li>
-              <li><a href="/?filter=site" class="site" style="font-weight: 900;">Website</a></li>
-              <li><a href="/?filter=business" class="company" style="font-weight: 900;">Business</a></li>
-              <li><a href="/?filter=service" class="service" style="font-weight: 900;">Service</a></li>
-              <li><a href="/?filter=tool" class="tool" style="font-weight: 900;">Tool</a></li>
+              <li><a href="/?filter=app" class="app">App</a></li>
+              <li><a href="/?filter=website" class="site">Website</a></li>
+              <li><a href="/?filter=business" class="company">Business</a></li>
+              <li><a href="/?filter=service" class="service">Service</a></li>
+              <li><a href="/?filter=tool" class="tool">Tool</a></li>
           </ul> 
         </div>
 
@@ -286,11 +291,11 @@ border-top: 1px dashed #EEE;
             e.preventDefault();
             if ($('#filters').css('display') == 'none') {
                 
-                $('#filters').slideDown('slow');
+                $('#filters').slideDown(400);
                 $('#arrow').html('&#9650;');      
             } else {
                 
-                $('#filters').slideUp('slow');
+                $('#filters').slideUp(400);
                 $('#arrow').html('&#9660;');
             }
         });
