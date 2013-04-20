@@ -5,6 +5,7 @@ import hashlib
 import logging
 import re
 import time
+import hashlib
 from random import choice
 from datetime import datetime
 from django.utils import simplejson
@@ -25,6 +26,7 @@ class Tweets(db.Model):
 	url = db.StringProperty()
 	img_url = db.StringProperty()
 	group = db.StringProperty()
+	hsh = db.StringProperty()
 
 ## Views ##
 
@@ -137,17 +139,18 @@ def scrape_tweets(page=1):
 		url = 'https://twitter.com/'+username+'/status/'+tweet['id_str']
 		html = filter_tweet(text)
 		group = get_group(text)
+		hsh = hashlib.sha224(html).hexdigest()
 		
 		date = datetime.strptime(tweet['created_at'], DT_FORMAT)	
 
 		q = Tweets.all()
-		q.filter('html =', html)
+		q.filter('hsh =', hsh)
 
 		if q.get():
 			continue
 		else:
 			updated += 1
-			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url, group=group)		
+			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url, group=group, hsh=hsh)		
 			twt.put()
 
 	logging.info('Updated %i entries'%updated)
