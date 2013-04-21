@@ -314,7 +314,7 @@ border-top: 1px dashed #EEE;
     <script type="text/javascript">
         $(document).ready(function(){
             $( ".date" ).each(function(index, element) {
-                var d = new Date(element.name);
+                var d = new Date.parse(element.name);
                 var str_d = d.toString("MMM d, h:mm tt");
                 $('[name="'+element.name+'"]').text(str_d);
             });            
