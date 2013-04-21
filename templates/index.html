@@ -262,21 +262,45 @@ border-top: 1px dashed #EEE;
         <hr>
 
         <div id="pages">
-            {% if page > 1 %}
+            {% if group == 'none' %}
 
-            <div id="left">
-                <a href="/?p={{page - 1}}">&larr; Take me back</a>
-            </div>
+                {% if page > 1 %}
+
+                <div id="left">
+                    <a href="/?p={{page - 1}}">&larr; Take me back</a>
+                </div>
+
+                {% endif %}
+
+                {% if page < max_page %}
+
+                <div id="right">
+                    <a href="/?p={{page + 1}}">{{ next }}! Show me more &rarr;</a>
+                </div>
+
+                {% endif %}
+
+            {% else %}
+
+                {% if page > 1 %}
+
+                <div id="left">
+                    <a href="/?p={{page - 1}}&filter={{group}}">&larr; Take me back</a>
+                </div>
+
+                {% endif %}
+
+                {% if page < max_page %}
+
+                <div id="right">
+                    <a href="/?p={{page + 1}}&filter={{group}}">{{ next }}! Show me more &rarr;</a>
+                </div>
+
+                {% endif %}
 
             {% endif %}
 
-            {% if page < max_page %}
 
-            <div id="right">
-                <a href="/?p={{page + 1}}">{{ next }}! Show me more &rarr;</a>
-            </div>
-
-            {% endif %}
 
 
 </div>
