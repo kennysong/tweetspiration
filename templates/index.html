@@ -7,6 +7,7 @@
         <link href='http://fonts.googleapis.com/css?family=Raleway:300,500' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+        <script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
         <link rel="shortcut icon" type="image/x-icon" href="/static/img/ts.png" />
     </head>
 
@@ -254,7 +255,7 @@ border-top: 1px dashed #EEE;
                 <div class="tweet">{{ tweet.html | safe }}</div>
                 <a href="//twitter.com/{{ tweet.username }}"><img src="{{ tweet.img_url }}" alt="" class="profile"></a>
                 <div class="info">
-                    by <span style="color:#808080">@</span><a href="//twitter.com/{{ tweet.username }}">{{ tweet.username }}</a> | <a href="{{ tweet.url }}" title="Link to tweet">{{ tweet.date.strftime('%b %d, %I:%M %p') }}</a> 
+                    by <span style="color:#808080">@</span><a href="//twitter.com/{{ tweet.username }}">{{ tweet.username }}</a> | <a href="{{ tweet.url }}" title="Link to tweet" class="date" name="{{ tweet.date }} +0000">{{ tweet.date.strftime('%b %d, %I:%M %p') }}</a> 
                 </div>
             </div>
         {% endfor %}
@@ -311,6 +312,14 @@ border-top: 1px dashed #EEE;
 </div>
 
     <script type="text/javascript">
+        $(document).ready(function(){
+            $( ".date" ).each(function(index, element) {
+                var d = new Date(element.name);
+                var str_d = d.toString("MMM d, h:mm tt");
+                $('[name="'+element.name+'"]').text(str_d);
+            });            
+        });
+
         $('#filter').click(function(e){
             e.preventDefault();
             if ($('#filters').css('display') == 'none') {
@@ -323,6 +332,10 @@ border-top: 1px dashed #EEE;
                 $('#arrow').html('&#9660;');
             }
         });
+
+
+
+
     </script>
     </body>
 </html>
