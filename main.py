@@ -4,9 +4,10 @@ import os
 import hashlib
 import logging
 import re
+import secret
 import time
-import twython
 
+from twython import Twython
 from random import choice
 from datetime import datetime
 from django.utils import simplejson
@@ -85,8 +86,8 @@ class ScrapeHandler(BaseHandler):
 
 ## The Magic ##
 
-SCRAPE_URL = 'http://search.twitter.com/search.json?q=(%22someone%20should%22)%20(make%20OR%20build%20OR%20create%20OR%20develop%20OR%20start%20OR%20design%20OR%20invent)%20(software%20OR%20app%20OR%20application%20OR%20tool%20OR%20website%20OR%20site%20OR%20service%20OR%20product%20OR%20company%20OR%20business)&page='
-DT_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
+SCRAPE_QUERY = '("someone should") (make OR build OR create OR develop OR start OR design OR invent) (software OR app OR application OR tool OR website OR site OR service OR product OR company OR business)'
+DT_FORMAT = '%a %b %d %H:%M:%S +0000 %Y'
 
 RE_HTTP = re.compile(r"(http://[^ ]+)")
 RE_HTTPS = re.compile(r"(https://[^ ]+)")
@@ -131,20 +132,34 @@ def get_max_page():
 		memcache.set('count', count)		
 	return (count // 15) + 1 #ghetto ceil function
 
-def scrape_tweets(page=1):
+def scrape_tweets(count=15, max_id=None, initial=False):
 	'''Scrapes one page of tweets and adds to db'''
-	fetched = urlfetch.fetch(SCRAPE_URL+str(page))
-	json = simplejson.loads(fetched.content)
-	results = json['results']
-	updated = 0
 
-	if results == []: 
+	# twython integration
+	twitter = Twython(secret.KEY, secret.SECRET, oauth_version=2)
+	ACCESS_TOKEN = twitter.obtain_access_token()
+
+	twitter = Twython(secret.KEY , access_token=ACCESS_TOKEN)
+
+	if not max_id:
+		results = twitter.search(q=SCRAPE_QUERY, count=count)['statuses']
+	else:
+		results = twitter.search(q=SCRAPE_QUERY, max_id=max_id, count=count)['statuses']
+
+	# end twython
+
+	print results
+
+	if len(results) == 0: 
 		return 'Empty page'
+
+	max_id_str = 0
+	updated = 0
 
 	for tweet in results:
 		text = tweet['text']
-		username = tweet['from_user']
-		img_url = tweet['profile_image_url_https']
+		username = tweet['user']['screen_name']
+		img_url = tweet['user']['profile_image_url_https']
 		url = 'https://twitter.com/'+username+'/status/'+tweet['id_str']
 		html = filter_tweet(text)
 		group = get_group(text)
@@ -156,16 +171,28 @@ def scrape_tweets(page=1):
 		q.filter('hsh =', hsh)
 
 		if q.get():
+			if initial:
+				logging.info(tweet['id_str'])
+				max_id_str = tweet['id_str']
 			continue
 		else:
+			if initial:
+				logging.info(tweet['id_str'])
+				max_id_str = tweet['id_str']			
 			updated += 1
 			twt = Tweets(text=text, html=html, username=username, date=date, url=url, img_url=img_url, group=group, hsh=hsh)		
 			twt.put()
+
+
 
 	memcache.delete('none1')
 	memcache.delete('count')
 
 	logging.info('Updated %i entries'%updated)
+
+	if initial:
+		return max_id_str
+
 	return updated
 
 def get_group(text):
@@ -205,22 +232,25 @@ def filter_tweet(text):
 	html = RE_SERVICE.sub(r'\1<span class="service">\2</span>\3', html)
 	
 	return html
-	
-	
-#FFB42C; orange
-#0FC8CC; blue
-#DD6945; red
-#94D45A; green
-#D15EDE; purple
 
-def initial_scrape():
-	'''Scrapes all tweets possible and adds to db'''
-	page = 1
-	while page:
-		if scrape_tweets(page=page) == "Empty page":
+def initial_scrape(max_id=0):
+	'''Scrapes all tweets possible and adds to db, run only in console'''
+	
+	while True:
+		if max_id: 
+			r = scrape_tweets(max_id=max_id, initial=True, count=100)
+			max_id = r
+		else:
+			r = scrape_tweets(initial=True, count=100)
+			max_id = r
+			
+		if r == "Empty page":
+			logging.info('reached bottom')
 			break
-		page += 1
+
+		logging.info('max: ' + str(max_id))
 		time.sleep(10)
+
 
 def rand_next_text():
 	return choice(NEXT_TEXT)
