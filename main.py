@@ -5,7 +5,8 @@ import hashlib
 import logging
 import re
 import time
-import hashlib
+import twython
+
 from random import choice
 from datetime import datetime
 from django.utils import simplejson
